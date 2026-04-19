@@ -348,7 +348,7 @@ class AppState: ObservableObject {
         guard var value = text, !value.isEmpty else { return text }
 
         let patterns: [(String, String)] = [
-            (#"[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}"#, "[E-POSTA]"),
+            (#"[A-Z0-9][A-Z0-9._%+\-]*@[A-Z0-9][A-Z0-9.\-]*\.[A-Z]{2,}"#, "[E-POSTA]"),
             (#"\bTR\d{2}[0-9A-Z]{22}\b"#, "[IBAN]"),
             (#"\b\d{11}\b"#, "[KIMLIK]"),
             // Türkiye telefon numaraları (+90 / 5xx / alan kodu) için maskeleme deseni
