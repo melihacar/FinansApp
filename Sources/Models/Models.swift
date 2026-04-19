@@ -2,15 +2,13 @@ import Foundation
 
 // MARK: - AI Provider
 enum AIProvider: String, CaseIterable, Identifiable {
-    case openai = "OpenAI"
-    case gemini = "Google Gemini"
+    case aiStudio = "Google AI Studio (Free Tier)"
 
     var id: String { rawValue }
 
     var icon: String {
         switch self {
-        case .openai: return "brain"
-        case .gemini: return "sparkles"
+        case .aiStudio: return "sparkles"
         }
     }
 }
@@ -150,7 +148,7 @@ struct Category: Identifiable, Codable {
     ]
 }
 
-// MARK: - OpenAI Response Models
+// MARK: - AI Response Models
 struct ParsedStatement: Codable {
     let cardInfo: CardInfo
     let statementInfo: StatementInfo

@@ -16,7 +16,7 @@ struct StatementsView: View {
                     ContentUnavailableView(
                         "API Key Gerekli",
                         systemImage: "key.fill",
-                        description: Text("Önce Ayarlar bölümünden OpenAI API key girin")
+                        description: Text("Önce Ayarlar bölümünden Google AI Studio API key girin")
                     )
                 } else {
                     // Drop Zone

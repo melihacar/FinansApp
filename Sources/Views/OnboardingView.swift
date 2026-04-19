@@ -7,7 +7,6 @@ struct OnboardingView: View {
 
     @State private var currentStep = 0
     @State private var apiKey = ""
-    @State private var selectedProvider: AIProvider = .gemini
     @State private var isUploading = false
     @State private var uploadSuccess = false
 
@@ -121,26 +120,16 @@ struct OnboardingView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            Text("PDF ekstrelerini okumak için bir AI servisi gerekli.")
+            Text("PDF ekstrelerini okumak için Google AI Studio API anahtarı gerekli.")
                 .font(.title3)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
 
             VStack(alignment: .leading, spacing: 16) {
-                // Provider selection
-                Picker("AI Servisi", selection: $selectedProvider) {
-                    ForEach(AIProvider.allCases) { provider in
-                        Label(provider.rawValue, systemImage: provider.icon)
-                            .tag(provider)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 300)
-
                 // API Key input
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("\(selectedProvider.rawValue) API Anahtarı")
+                        Text("Google AI Studio API Anahtarı")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         Text("(Opsiyonel)")
@@ -169,14 +158,7 @@ struct OnboardingView: View {
         .padding(40)
     }
 
-    private var apiHelpURL: URL {
-        switch selectedProvider {
-        case .openai:
-            return URL(string: "https://platform.openai.com/api-keys")!
-        case .gemini:
-            return URL(string: "https://aistudio.google.com/app/apikey")!
-        }
-    }
+    private let apiHelpURL = URL(string: "https://aistudio.google.com/app/apikey")!
 
     // MARK: - Step 3: Upload
     private var uploadStep: some View {
@@ -242,13 +224,8 @@ struct OnboardingView: View {
 
     // MARK: - Actions
     private func saveApiKey() {
-        switch selectedProvider {
-        case .openai:
-            appState.openaiApiKey = apiKey
-        case .gemini:
-            appState.geminiApiKey = apiKey
-        }
-        appState.setAIProvider(selectedProvider)
+        appState.aiStudioApiKey = apiKey
+        appState.setAIProvider(.aiStudio)
     }
 
     private func selectAndUploadPDF() {

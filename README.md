@@ -17,7 +17,8 @@ Derlemek istemiyorsanız, hazır derlenmiş versiyonu indirin:
 
 ## Özellikler
 
-- **PDF Ekstre Okuma**: Kredi kartı ekstrelerini AI ile otomatik analiz (OpenAI GPT-4o veya Google Gemini)
+- **PDF Ekstre Okuma**: Kredi kartı ekstrelerini Google AI Studio free tier ile otomatik analiz
+- **Kişisel Veri Filtreleme**: Ekstre metnindeki kişisel bilgileri maskeleyerek kayıt etme seçeneği
 - **Kategori Bazlı Analiz**: Harcamalarınızı kategorilere göre görüntüleyin
 - **Dashboard**: Pasta ve bar grafikleri ile görsel analiz
 - **Ay Ay Karşılaştırma**: İki ayı seçip detaylı karşılaştırma yapın
@@ -39,7 +40,7 @@ Derlemek istemiyorsanız, hazır derlenmiş versiyonu indirin:
 
 - macOS 14 (Sonoma) veya üzeri
 - Swift 5.9+
-- OpenAI veya Google Gemini API anahtarı
+- Google AI Studio API anahtarı
 
 ### Derleme
 
@@ -65,21 +66,16 @@ swift run
 ## Kullanım
 
 1. Uygulamayı ilk açtığınızda onboarding ekranı sizi karşılar
-2. AI servisi seçin (Gemini önerilir) ve API anahtarınızı girin
+2. Google AI Studio API anahtarınızı girin
 3. İlk kredi kartı ekstrenizi PDF olarak yükleyin
 4. AI otomatik olarak işlemleri çıkaracak ve kategorize edecek
 5. Dashboard'dan harcamalarınızı analiz edin
 
 ## API Anahtarı Alma
 
-### Google Gemini (Önerilen)
+### Google AI Studio (Free Tier)
 1. [Google AI Studio](https://aistudio.google.com/app/apikey) adresine gidin
 2. "Create API Key" butonuna tıklayın
-3. Anahtarı kopyalayıp uygulamaya yapıştırın
-
-### OpenAI
-1. [OpenAI Platform](https://platform.openai.com/api-keys) adresine gidin
-2. "Create new secret key" butonuna tıklayın
 3. Anahtarı kopyalayıp uygulamaya yapıştırın
 
 ## Veri Depolama
@@ -92,8 +88,7 @@ swift run
 - **SwiftUI** - UI framework
 - **Swift Charts** - Grafikler
 - **SQLite3** - Yerel veritabanı
-- **OpenAI API** - GPT-4o vision
-- **Google Gemini API** - Gemini 2.0 Flash
+- **Google AI Studio (Gemini API)** - Gemini 2.0 Flash-Lite
 
 ## Desteklenen Kategoriler
 
