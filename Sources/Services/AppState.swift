@@ -351,8 +351,6 @@ class AppState: ObservableObject {
             (#"[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}"#, "[E-POSTA]"),
             (#"\bTR\d{2}[0-9A-Z]{22}\b"#, "[IBAN]"),
             (#"\b\d{11}\b"#, "[KIMLIK]"),
-            (#"\b\d{13,19}\b"#, "[KART]"),
-            (#"\b(?:\d{4}[ -]){2,4}\d{1,4}\b"#, "[KART]"),
             (#"(?:\+?90[\s-]?)?(?:5\d{2}|[2-4]\d{2})[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}"#, "[TELEFON]")
         ]
 
@@ -364,7 +362,45 @@ class AppState: ObservableObject {
             )
         }
 
+        value = maskValidCardNumbers(in: value)
+
         return value.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func maskValidCardNumbers(in text: String) -> String {
+        guard let regex = try? NSRegularExpression(pattern: #"(?:\d[ -]?){13,19}"#) else {
+            return text
+        }
+
+        var result = text
+        let nsRange = NSRange(result.startIndex..<result.endIndex, in: result)
+        let matches = regex.matches(in: result, range: nsRange)
+
+        for match in matches.reversed() {
+            guard let range = Range(match.range, in: result) else { continue }
+            let candidate = String(result[range])
+            let digits = candidate.filter(\.isNumber)
+            guard (13...19).contains(digits.count), isValidCardNumber(digits) else { continue }
+            result.replaceSubrange(range, with: "[KART]")
+        }
+
+        return result
+    }
+
+    private func isValidCardNumber(_ digits: String) -> Bool {
+        var sum = 0
+        let reversed = digits.reversed().map { Int(String($0)) ?? 0 }
+
+        for (index, digit) in reversed.enumerated() {
+            if index % 2 == 1 {
+                let doubled = digit * 2
+                sum += doubled > 9 ? doubled - 9 : doubled
+            } else {
+                sum += digit
+            }
+        }
+
+        return sum % 10 == 0
     }
 
     private func sanitizeLastFour(_ value: String?) -> String? {
