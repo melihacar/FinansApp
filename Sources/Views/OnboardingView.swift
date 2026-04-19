@@ -143,9 +143,11 @@ struct OnboardingView: View {
                 }
 
                 // Help link
-                Link(destination: apiHelpURL) {
-                    Label("API anahtarı nasıl alınır?", systemImage: "questionmark.circle")
-                        .font(.caption)
+                if let apiHelpURL {
+                    Link(destination: apiHelpURL) {
+                        Label("API anahtarı nasıl alınır?", systemImage: "questionmark.circle")
+                            .font(.caption)
+                    }
                 }
 
                 Text("Bu adımı atlayıp Ayarlar'dan daha sonra da girebilirsiniz.")
@@ -158,7 +160,9 @@ struct OnboardingView: View {
         .padding(40)
     }
 
-    private let apiHelpURL = URL(string: "https://aistudio.google.com/app/apikey")!
+    private var apiHelpURL: URL? {
+        URL(string: "https://aistudio.google.com/app/apikey")
+    }
 
     // MARK: - Step 3: Upload
     private var uploadStep: some View {
