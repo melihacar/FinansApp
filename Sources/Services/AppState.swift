@@ -381,7 +381,7 @@ class AppState: ObservableObject {
             guard let range = Range(match.range, in: result) else { continue }
             let candidate = String(result[range])
             let digits = candidate.filter(\.isNumber)
-            // ISO/IEC 7812'e göre kart numarası uzunluğu genelde 13-19 hane aralığındadır.
+            // ISO/IEC 7812'e göre kart numarası uzunluğu genellikle 13-19 hane aralığındadır.
             guard (13...19).contains(digits.count), isValidCardNumber(digits) else { continue }
             result.replaceSubrange(range, with: "[KART]")
         }
