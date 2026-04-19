@@ -44,6 +44,7 @@ class GeminiService {
         - Kredi kartı ödemelerini dahil etme
         - Negatif değerleri İade kategorisine ekle
         - Kişisel verileri maskele/çıkar: ad soyad, adres, e-posta, telefon, TC kimlik no, IBAN, tam kart numarası
+        - Not: Uygulama tarafında da ek bir kişisel veri filtreleme katmanı çalışır
         - Kart bilgisinde sadece banka adı, kart adı (kişisel isim olmadan) ve son 4 hane döndür
         """
 

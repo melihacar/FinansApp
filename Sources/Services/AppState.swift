@@ -28,7 +28,13 @@ class AppState: ObservableObject {
         }
         return .aiStudio
     }()
-    @Published var shouldFilterPersonalData: Bool = UserDefaults.standard.object(forKey: "filter_personal_data_enabled") as? Bool ?? true
+    @Published var shouldFilterPersonalData: Bool = {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: "filter_personal_data_enabled") != nil else {
+            return true
+        }
+        return defaults.bool(forKey: "filter_personal_data_enabled")
+    }()
 
     // MARK: - Services
     private let db = DatabaseService.shared
