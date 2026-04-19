@@ -1,18 +1,5 @@
 import Foundation
 
-// MARK: - AI Provider
-enum AIProvider: String, CaseIterable, Identifiable {
-    case openai = "OpenAI"
-
-    var id: String { rawValue }
-
-    var icon: String {
-        switch self {
-        case .openai: return "brain"
-        }
-    }
-}
-
 // MARK: - Card
 struct Card: Identifiable, Codable {
     let id: String

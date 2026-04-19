@@ -20,9 +20,6 @@ class AppState: ObservableObject {
     @Published var selectedCategory: String?
     @Published var selectedCardId: String?
 
-    // MARK: - AI Provider Selection
-    @Published var selectedAIProvider: AIProvider = .openai
-
     // MARK: - Services
     private let db = DatabaseService.shared
     private let openai = OpenAIService.shared
@@ -257,10 +254,6 @@ class AppState: ObservableObject {
 
     var hasApiKey: Bool {
         openai.hasApiKey
-    }
-
-    func setAIProvider(_ provider: AIProvider) {
-        selectedAIProvider = provider
     }
 
     // MARK: - Clear All Data

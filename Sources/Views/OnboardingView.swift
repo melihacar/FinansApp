@@ -223,7 +223,6 @@ struct OnboardingView: View {
     // MARK: - Actions
     private func saveApiKey() {
         appState.openaiApiKey = apiKey
-        appState.setAIProvider(.openai)
     }
 
     private func selectAndUploadPDF() {
