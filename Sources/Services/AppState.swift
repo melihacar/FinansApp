@@ -26,13 +26,19 @@ class AppState: ObservableObject {
            let provider = AIProvider(rawValue: saved) {
             return provider
         }
-        return .openai
+        return .aiStudio
+    }()
+    @Published var shouldFilterPersonalData: Bool = {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: "filter_personal_data_enabled") != nil else {
+            return true
+        }
+        return defaults.bool(forKey: "filter_personal_data_enabled")
     }()
 
     // MARK: - Services
     private let db = DatabaseService.shared
-    private let openai = OpenAIService.shared
-    private let gemini = GeminiService.shared
+    private let aiStudio = GeminiService.shared
 
     // MARK: - Initialization
     init() {
@@ -177,23 +183,22 @@ class AppState: ObservableObject {
             // Use selected AI provider
             let parsed: ParsedStatement
             switch selectedAIProvider {
-            case .openai:
-                parsed = try await openai.parseStatement(pdfData: pdfData)
-            case .gemini:
-                parsed = try await gemini.parseStatement(pdfData: pdfData)
+            case .aiStudio:
+                parsed = try await aiStudio.parseStatement(pdfData: pdfData)
             }
+            let sanitizedParsed = sanitizeParsedStatement(parsed)
 
             // Find or create card automatically
             let cardId: String
-            if let lastFour = parsed.cardInfo.lastFour,
+            if let lastFour = sanitizedParsed.cardInfo.lastFour,
                let existingCard = db.findCardByLastFour(lastFour) {
                 cardId = existingCard.id
             } else {
                 // Create new card from parsed info
                 let newCard = Card(
-                    name: parsed.cardInfo.cardName ?? "Bilinmeyen Kart",
-                    bank: parsed.cardInfo.bank,
-                    lastFour: parsed.cardInfo.lastFour
+                    name: sanitizedParsed.cardInfo.cardName ?? "Bilinmeyen Kart",
+                    bank: sanitizedParsed.cardInfo.bank,
+                    lastFour: sanitizedParsed.cardInfo.lastFour
                 )
                 db.createCard(newCard)
                 cardId = newCard.id
@@ -206,19 +211,19 @@ class AppState: ObservableObject {
 
             let statement = Statement(
                 cardId: cardId,
-                periodStart: parsed.statementInfo.periodStart.flatMap { dateFormatter.date(from: $0) },
-                periodEnd: parsed.statementInfo.periodEnd.flatMap { dateFormatter.date(from: $0) },
-                totalAmount: parsed.statementInfo.totalAmount,
-                minPayment: parsed.statementInfo.minPayment,
-                dueDate: parsed.statementInfo.dueDate.flatMap { dateFormatter.date(from: $0) },
+                periodStart: sanitizedParsed.statementInfo.periodStart.flatMap { dateFormatter.date(from: $0) },
+                periodEnd: sanitizedParsed.statementInfo.periodEnd.flatMap { dateFormatter.date(from: $0) },
+                totalAmount: sanitizedParsed.statementInfo.totalAmount,
+                minPayment: sanitizedParsed.statementInfo.minPayment,
+                dueDate: sanitizedParsed.statementInfo.dueDate.flatMap { dateFormatter.date(from: $0) },
                 pdfPath: pdfURL.path,
-                rawJson: try? String(data: JSONEncoder().encode(parsed), encoding: .utf8)
+                rawJson: try? String(data: JSONEncoder().encode(sanitizedParsed), encoding: .utf8)
             )
 
             db.createStatement(statement)
 
             // Create transactions
-            let transactions = parsed.transactions.map { txn in
+            let transactions = sanitizedParsed.transactions.map { txn in
                 Transaction(
                     statementId: statement.id,
                     date: dateFormatter.date(from: txn.date) ?? Date(),
@@ -246,8 +251,8 @@ class AppState: ObservableObject {
 
     // MARK: - AI Insights
     func loadInsights() async {
-        guard openai.hasApiKey else {
-            error = "OpenAI API anahtarı gerekli"
+        guard aiStudio.hasApiKey else {
+            error = "Google AI Studio API anahtarı gerekli"
             return
         }
 
@@ -255,7 +260,7 @@ class AppState: ObservableObject {
         error = nil
 
         do {
-            insights = try await openai.getInsights(transactions: transactions)
+            insights = try await aiStudio.getInsights(transactions: transactions)
         } catch {
             self.error = error.localizedDescription
         }
@@ -264,26 +269,25 @@ class AppState: ObservableObject {
     }
 
     // MARK: - Settings
-    var openaiApiKey: String {
-        get { openai.apiKey }
-        set { openai.apiKey = newValue }
-    }
-
-    var geminiApiKey: String {
-        get { gemini.apiKey }
-        set { gemini.apiKey = newValue }
+    var aiStudioApiKey: String {
+        get { aiStudio.apiKey }
+        set { aiStudio.apiKey = newValue }
     }
 
     var hasApiKey: Bool {
         switch selectedAIProvider {
-        case .openai: return openai.hasApiKey
-        case .gemini: return gemini.hasApiKey
+        case .aiStudio: return aiStudio.hasApiKey
         }
     }
 
     func setAIProvider(_ provider: AIProvider) {
         selectedAIProvider = provider
         UserDefaults.standard.set(provider.rawValue, forKey: "selected_ai_provider")
+    }
+
+    func setPersonalDataFiltering(_ enabled: Bool) {
+        shouldFilterPersonalData = enabled
+        UserDefaults.standard.set(enabled, forKey: "filter_personal_data_enabled")
     }
 
     // MARK: - Clear All Data
@@ -311,5 +315,102 @@ class AppState: ObservableObject {
         }
 
         return csv
+    }
+
+    // MARK: - Privacy Filtering
+    private func sanitizeParsedStatement(_ parsed: ParsedStatement) -> ParsedStatement {
+        guard shouldFilterPersonalData else { return parsed }
+
+        let sanitizedCardInfo = CardInfo(
+            bank: sanitizeText(parsed.cardInfo.bank),
+            cardName: sanitizeText(parsed.cardInfo.cardName),
+            lastFour: sanitizeLastFour(parsed.cardInfo.lastFour)
+        )
+
+        let sanitizedTransactions = parsed.transactions.map { txn in
+            ParsedTransaction(
+                date: txn.date,
+                description: sanitizeText(txn.description) ?? txn.description,
+                merchant: sanitizeText(txn.merchant),
+                amount: txn.amount,
+                category: txn.category
+            )
+        }
+
+        return ParsedStatement(
+            cardInfo: sanitizedCardInfo,
+            statementInfo: parsed.statementInfo,
+            transactions: sanitizedTransactions
+        )
+    }
+
+    private func sanitizeText(_ text: String?) -> String? {
+        guard var value = text, !value.isEmpty else { return text }
+
+        let patterns: [(String, String)] = [
+            (#"[A-Z0-9][A-Z0-9._%+\-]*@[A-Z0-9][A-Z0-9.\-]*\.[A-Z]{2,}"#, "[E-POSTA]"),
+            (#"\bTR\d{2}[0-9A-Z]{22}\b"#, "[IBAN]"),
+            (#"\b\d{11}\b"#, "[KIMLIK]"),
+            // Türkiye telefon numaraları (+90 / 5xx / alan kodu) için maskeleme deseni
+            (#"(?:\+?90[\s-]?)?(?:5\d{2}|[2-4]\d{2})[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}"#, "[TELEFON]")
+        ]
+
+        for (pattern, replacement) in patterns {
+            value = value.replacingOccurrences(
+                of: pattern,
+                with: replacement,
+                options: [.regularExpression, .caseInsensitive]
+            )
+        }
+
+        value = maskValidCardNumbers(in: value)
+
+        return value.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func maskValidCardNumbers(in text: String) -> String {
+        guard let regex = try? NSRegularExpression(pattern: #"(?:\d[ -]?){13,19}"#) else {
+            return text
+        }
+
+        var result = text
+        let nsRange = NSRange(result.startIndex..<result.endIndex, in: result)
+        let matches = regex.matches(in: result, range: nsRange)
+
+        for match in matches.reversed() {
+            guard let range = Range(match.range, in: result) else { continue }
+            let candidate = String(result[range])
+            let digits = candidate.filter(\.isNumber)
+            // ISO/IEC 7812'e göre kart numarası uzunluğu genellikle 13-19 hane aralığındadır.
+            guard (13...19).contains(digits.count), isValidCardNumber(digits) else { continue }
+            result.replaceSubrange(range, with: "[KART]")
+        }
+
+        return result
+    }
+
+    private func isValidCardNumber(_ digits: String) -> Bool {
+        var sum = 0
+        let reversed = digits.reversed().map { Int(String($0)) ?? 0 }
+
+        for (index, digit) in reversed.enumerated() {
+            if index % 2 == 1 {
+                let doubled = digit * 2
+                sum += doubled > 9 ? doubled - 9 : doubled
+            } else {
+                sum += digit
+            }
+        }
+
+        return sum % 10 == 0
+    }
+
+    private func sanitizeLastFour(_ value: String?) -> String? {
+        guard let value else { return nil }
+        let digits = value.filter(\.isNumber)
+        if digits.count >= 4 {
+            return String(digits.suffix(4))
+        }
+        return digits.isEmpty ? nil : digits
     }
 }

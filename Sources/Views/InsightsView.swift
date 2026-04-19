@@ -25,7 +25,7 @@ struct InsightsView: View {
                 ContentUnavailableView(
                     "API Key Gerekli",
                     systemImage: "key.fill",
-                    description: Text("AI önerilerini görmek için Ayarlar'dan OpenAI API key ekleyin")
+                    description: Text("AI önerilerini görmek için Ayarlar'dan Google AI Studio API key ekleyin")
                 )
             } else if appState.isLoading {
                 VStack {

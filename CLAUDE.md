@@ -27,7 +27,7 @@ cp -r FinansApp.app /Applications/
 
 ## Architecture
 
-FinansApp is a macOS personal finance application built with SwiftUI. It parses credit card statements (PDF) using AI (OpenAI or Google Gemini) and provides spending analytics.
+FinansApp is a macOS personal finance application built with SwiftUI. It parses credit card statements (PDF) using Google AI Studio (Gemini API) and provides spending analytics.
 
 ### Core Components
 
@@ -41,10 +41,10 @@ FinansApp is a macOS personal finance application built with SwiftUI. It parses 
 - Tables: `cards`, `statements`, `transactions`, `categories`
 - Located at `~/Library/Application Support/FinansApp/finans.db`
 
-**AI Services** (`Services/OpenAIService.swift`, `Services/GeminiService.swift`)
+**AI Service** (`Services/GeminiService.swift`)
 - Parse PDF statements into structured data (`ParsedStatement`)
-- Extract card info, statement details, and categorized transactions
-- API keys stored in UserDefaults
+- Generate spending insights (`AIInsight`)
+- API key stored in UserDefaults (Google AI Studio)
 
 ### Data Flow
 
