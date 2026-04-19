@@ -21,18 +21,11 @@ class AppState: ObservableObject {
     @Published var selectedCardId: String?
 
     // MARK: - AI Provider Selection
-    @Published var selectedAIProvider: AIProvider = {
-        if let saved = UserDefaults.standard.string(forKey: "selected_ai_provider"),
-           let provider = AIProvider(rawValue: saved) {
-            return provider
-        }
-        return .openai
-    }()
+    @Published var selectedAIProvider: AIProvider = .openai
 
     // MARK: - Services
     private let db = DatabaseService.shared
     private let openai = OpenAIService.shared
-    private let gemini = GeminiService.shared
 
     // MARK: - Initialization
     init() {
@@ -174,14 +167,7 @@ class AppState: ObservableObject {
         do {
             let pdfData = try Data(contentsOf: pdfURL)
 
-            // Use selected AI provider
-            let parsed: ParsedStatement
-            switch selectedAIProvider {
-            case .openai:
-                parsed = try await openai.parseStatement(pdfData: pdfData)
-            case .gemini:
-                parsed = try await gemini.parseStatement(pdfData: pdfData)
-            }
+            let parsed = try await openai.parseStatement(pdfData: pdfData)
 
             // Find or create card automatically
             let cardId: String
@@ -269,21 +255,12 @@ class AppState: ObservableObject {
         set { openai.apiKey = newValue }
     }
 
-    var geminiApiKey: String {
-        get { gemini.apiKey }
-        set { gemini.apiKey = newValue }
-    }
-
     var hasApiKey: Bool {
-        switch selectedAIProvider {
-        case .openai: return openai.hasApiKey
-        case .gemini: return gemini.hasApiKey
-        }
+        openai.hasApiKey
     }
 
     func setAIProvider(_ provider: AIProvider) {
         selectedAIProvider = provider
-        UserDefaults.standard.set(provider.rawValue, forKey: "selected_ai_provider")
     }
 
     // MARK: - Clear All Data

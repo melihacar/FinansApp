@@ -3,14 +3,12 @@ import Foundation
 // MARK: - AI Provider
 enum AIProvider: String, CaseIterable, Identifiable {
     case openai = "OpenAI"
-    case gemini = "Google Gemini"
 
     var id: String { rawValue }
 
     var icon: String {
         switch self {
         case .openai: return "brain"
-        case .gemini: return "sparkles"
         }
     }
 }

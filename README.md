@@ -10,14 +10,14 @@ Derlemek istemiyorsanız, hazır derlenmiş versiyonu indirin:
 2. Zip dosyasını açın
 3. `FinansApp.app` dosyasını `/Applications` klasörüne sürükleyin
 4. Uygulamayı açın (ilk açılışta sağ tıklayıp "Aç" seçin)
-5. [Google AI Studio](https://aistudio.google.com/app/apikey)'dan ücretsiz API anahtarı alın
+5. [OpenAI Platform](https://platform.openai.com/api-keys)'dan API anahtarı alın
 6. Anahtarı uygulamaya girin ve ekstre PDF'lerinizi yüklemeye başlayın!
 
 > **Not**: macOS Gatekeeper uyarısı çıkarsa, System Settings > Privacy & Security'den uygulamaya izin verin.
 
 ## Özellikler
 
-- **PDF Ekstre Okuma**: Kredi kartı ekstrelerini AI ile otomatik analiz (OpenAI GPT-4o veya Google Gemini)
+- **PDF Ekstre Okuma**: Kredi kartı ekstrelerini AI ile otomatik analiz (OpenAI)
 - **Kategori Bazlı Analiz**: Harcamalarınızı kategorilere göre görüntüleyin
 - **Dashboard**: Pasta ve bar grafikleri ile görsel analiz
 - **Ay Ay Karşılaştırma**: İki ayı seçip detaylı karşılaştırma yapın
@@ -39,7 +39,7 @@ Derlemek istemiyorsanız, hazır derlenmiş versiyonu indirin:
 
 - macOS 14 (Sonoma) veya üzeri
 - Swift 5.9+
-- OpenAI veya Google Gemini API anahtarı
+- OpenAI API anahtarı
 
 ### Derleme
 
@@ -65,19 +65,13 @@ swift run
 ## Kullanım
 
 1. Uygulamayı ilk açtığınızda onboarding ekranı sizi karşılar
-2. AI servisi seçin (Gemini önerilir) ve API anahtarınızı girin
+2. OpenAI API anahtarınızı girin
 3. İlk kredi kartı ekstrenizi PDF olarak yükleyin
 4. AI otomatik olarak işlemleri çıkaracak ve kategorize edecek
 5. Dashboard'dan harcamalarınızı analiz edin
 
 ## API Anahtarı Alma
 
-### Google Gemini (Önerilen)
-1. [Google AI Studio](https://aistudio.google.com/app/apikey) adresine gidin
-2. "Create API Key" butonuna tıklayın
-3. Anahtarı kopyalayıp uygulamaya yapıştırın
-
-### OpenAI
 1. [OpenAI Platform](https://platform.openai.com/api-keys) adresine gidin
 2. "Create new secret key" butonuna tıklayın
 3. Anahtarı kopyalayıp uygulamaya yapıştırın
@@ -92,8 +86,7 @@ swift run
 - **SwiftUI** - UI framework
 - **Swift Charts** - Grafikler
 - **SQLite3** - Yerel veritabanı
-- **OpenAI API** - GPT-4o vision
-- **Google Gemini API** - Gemini 2.0 Flash
+- **OpenAI API** - GPT-5 mini
 
 ## Desteklenen Kategoriler
 

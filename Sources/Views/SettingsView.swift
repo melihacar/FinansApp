@@ -3,55 +3,26 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
     @State private var openaiApiKey = ""
-    @State private var geminiApiKey = ""
     @State private var showOpenaiKey = false
-    @State private var showGeminiKey = false
     @State private var savedOpenai = false
-    @State private var savedGemini = false
     @State private var showClearDataAlert = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                // AI Provider Selection
-                VStack(alignment: .leading, spacing: 12) {
-                    Label("PDF Okuma Modeli", systemImage: "cpu")
-                        .font(.headline)
-
-                    Text("Ekstreleri analiz etmek için kullanılacak AI modelini seçin.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
-                    Picker("AI Sağlayıcı", selection: Binding(
-                        get: { appState.selectedAIProvider },
-                        set: { appState.setAIProvider($0) }
-                    )) {
-                        ForEach(AIProvider.allCases) { provider in
-                            Label(provider.rawValue, systemImage: provider.icon)
-                                .tag(provider)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .padding()
-                .background(.background.secondary)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-
                 // OpenAI API Key Section
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Label("OpenAI API Anahtarı", systemImage: "key.fill")
                             .font(.headline)
                         Spacer()
-                        if appState.selectedAIProvider == .openai {
-                            Text("Aktif")
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(.green.opacity(0.2))
-                                .foregroundStyle(.green)
-                                .clipShape(Capsule())
-                        }
+                        Text("Aktif")
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.green.opacity(0.2))
+                            .foregroundStyle(.green)
+                            .clipShape(Capsule())
                     }
 
                     HStack {
@@ -84,60 +55,6 @@ struct SettingsView: View {
 
                     Link(destination: URL(string: "https://platform.openai.com/api-keys")!) {
                         Label("OpenAI API anahtarı nasıl alınır?", systemImage: "arrow.up.right")
-                            .font(.caption)
-                    }
-                }
-                .padding()
-                .background(.background.secondary)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-
-                // Gemini API Key Section
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Google Gemini API Anahtarı", systemImage: "key.fill")
-                            .font(.headline)
-                        Spacer()
-                        if appState.selectedAIProvider == .gemini {
-                            Text("Aktif")
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(.green.opacity(0.2))
-                                .foregroundStyle(.green)
-                                .clipShape(Capsule())
-                        }
-                    }
-
-                    HStack {
-                        if showGeminiKey {
-                            TextField("AIza...", text: $geminiApiKey)
-                                .textFieldStyle(.roundedBorder)
-                        } else {
-                            SecureField("AIza...", text: $geminiApiKey)
-                                .textFieldStyle(.roundedBorder)
-                        }
-
-                        Button {
-                            showGeminiKey.toggle()
-                        } label: {
-                            Image(systemName: showGeminiKey ? "eye.slash" : "eye")
-                        }
-                        .buttonStyle(.borderless)
-
-                        Button {
-                            saveGeminiApiKey()
-                        } label: {
-                            if savedGemini {
-                                Label("Kaydedildi", systemImage: "checkmark")
-                            } else {
-                                Text("Kaydet")
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-
-                    Link(destination: URL(string: "https://aistudio.google.com/apikey")!) {
-                        Label("Gemini API anahtarı nasıl alınır?", systemImage: "arrow.up.right")
                             .font(.caption)
                     }
                 }
@@ -243,7 +160,6 @@ struct SettingsView: View {
         .navigationTitle("Ayarlar")
         .onAppear {
             openaiApiKey = appState.openaiApiKey
-            geminiApiKey = appState.geminiApiKey
         }
         .alert("Tüm Verileri Sil", isPresented: $showClearDataAlert) {
             Button("İptal", role: .cancel) { }
@@ -265,14 +181,6 @@ struct SettingsView: View {
         savedOpenai = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             savedOpenai = false
-        }
-    }
-
-    private func saveGeminiApiKey() {
-        appState.geminiApiKey = geminiApiKey
-        savedGemini = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            savedGemini = false
         }
     }
 
