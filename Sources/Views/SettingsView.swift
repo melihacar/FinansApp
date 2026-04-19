@@ -16,13 +16,15 @@ struct SettingsView: View {
                         Label("OpenAI API Anahtarı", systemImage: "key.fill")
                             .font(.headline)
                         Spacer()
-                        Text("Aktif")
-                            .font(.caption)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(.green.opacity(0.2))
-                            .foregroundStyle(.green)
-                            .clipShape(Capsule())
+                        if appState.hasApiKey {
+                            Text("Aktif")
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(.green.opacity(0.2))
+                                .foregroundStyle(.green)
+                                .clipShape(Capsule())
+                        }
                     }
 
                     HStack {
