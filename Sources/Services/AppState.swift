@@ -351,6 +351,7 @@ class AppState: ObservableObject {
             (#"[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}"#, "[E-POSTA]"),
             (#"\bTR\d{2}[0-9A-Z]{22}\b"#, "[IBAN]"),
             (#"\b\d{11}\b"#, "[KIMLIK]"),
+            // Türkiye telefon numaraları (+90 / 5xx / alan kodu) için maskeleme deseni
             (#"(?:\+?90[\s-]?)?(?:5\d{2}|[2-4]\d{2})[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}"#, "[TELEFON]")
         ]
 
@@ -380,6 +381,7 @@ class AppState: ObservableObject {
             guard let range = Range(match.range, in: result) else { continue }
             let candidate = String(result[range])
             let digits = candidate.filter(\.isNumber)
+            // ISO/IEC 7812'e göre kart numarası uzunluğu genelde 13-19 hane aralığındadır.
             guard (13...19).contains(digits.count), isValidCardNumber(digits) else { continue }
             result.replaceSubrange(range, with: "[KART]")
         }

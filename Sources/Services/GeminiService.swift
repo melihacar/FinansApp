@@ -39,7 +39,7 @@ class GeminiService {
         {"card_info":{"bank":"X","card_name":"X","last_four":"1234"},"statement_info":{"period_start":"YYYY-MM-DD","period_end":"YYYY-MM-DD","total_amount":0,"min_payment":0,"due_date":"YYYY-MM-DD"},"transactions":[{"date":"YYYY-MM-DD","description":"kısa","merchant":"kısa","amount":0,"category":"X"}]}
 
         Kurallar:
-        - Kategoriler: Market,Restoran,Ulaşım,Giyim,Teknoloji,Sağlık,Eğlence,Fatura,Abonelik,Eşya,Kırtasiye,İade,Diğer
+        - Kategoriler: Market, Restoran, Ulaşım, Giyim, Teknoloji, Sağlık, Eğlence, Fatura, Abonelik, Eşya, Kırtasiye, İade, Diğer
         - description ve merchant kısa olsun (max 20 karakter)
         - Kredi kartı ödemelerini dahil etme
         - Negatif değerleri İade kategorisine ekle
